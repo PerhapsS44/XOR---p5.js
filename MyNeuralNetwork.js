@@ -10,7 +10,7 @@ class NeuralNetwork{
   // var m2;
   // var bh;
   // var bo;
-  NeuralNetwork(a,b,c){
+  constructor(a,b,c){
     this.inputs = a;
     this.hidden = b;
     this.outputs = c;
@@ -26,22 +26,22 @@ class NeuralNetwork{
   estimate (input){
 
 
-    var out = new int[this.outputs];
+    var out = [];
 
     var in_m = new Matrix(1,this.inputs);
     var out_m = new Matrix(1,this.outputs);
     in_m.data[0] = input;
 
-    var hidden = product(in_m,m1);
-    hidden.sum(bh);
+    var hidden = product(in_m,this.m1);
+    hidden.sum(this.bh);
     for (var i=0;i<hidden.r;i++){
       for (var j=0;j<hidden.c;j++){
         hidden.data[i][j] = sigmoid(hidden.data[i][j]);
       }
     }
 
-    out_m = product(hidden,m2);
-    out_m.sum(bo);
+    out_m = product(hidden,this.m2);
+    out_m.sum(this.bo);
     for (var i=0;i<out_m.r;i++){
       for (var j=0;j<out_m.c;j++){
         out_m.data[i][j] = sigmoid(out_m.data[i][j]);
@@ -63,21 +63,21 @@ class NeuralNetwork{
 
     var err_bh = new Matrix(1,this.hidden);
     var err_bo = new Matrix(1,this.outputs);
-    console.log(this.m1);
-    console.log(in_m);
+    //console.log(this.m1);
+    //console.log(in_m);
     in_m.data[0] = input;
 
-    var hidden = product(in_m,m1);
+    var hidden = product(in_m,this.m1);
 
-    hidden.sum(bh);
+    hidden.sum(this.bh);
     for (var i=0;i<hidden.r;i++){
       for (var j=0;j<hidden.c;j++){
         hidden.data[i][j] = sigmoid(hidden.data[i][j]);
       }
     }
 
-    out_m = product(hidden,m2);
-    out_m.sum(bo);
+    out_m = product(hidden,this.m2);
+    out_m.sum(this.bo);
     for (var i=0;i<out_m.r;i++){
       for (var j=0;j<out_m.c;j++){
         out_m.data[i][j] = sigmoid(out_m.data[i][j]);
@@ -86,7 +86,7 @@ class NeuralNetwork{
     out = out_m.data[0];
 
     var err = new Matrix(1,this.outputs);
-    var errors = new float[this.outputs];
+    var errors = [];
 
     for (var i=0;i<this.outputs;i++){
       errors[i] = tar[i]-out[i];
@@ -95,29 +95,29 @@ class NeuralNetwork{
     }
 
     //var[] h_errors = product(err,m2.transpose()).data[0];
-    var h_err = product(m2,err.transpose());
-    var h_errors = new float[h_err.r];
+    var h_err = product(this.m2,err.transpose());
+    var h_errors = [];
     for (var i=0;i<h_err.r;i++){
       h_errors[i] = h_err.data[i][0];
     }
-    var error_ho = new Matrix(m2.r,m2.c);
+    var error_ho = new Matrix(this.m2.r,this.m2.c);
 
     //println(error_ho.r+"  "+error_ho.c);
 
     for (var i=0;i<error_ho.r;i++){
       for (var j=0;j<error_ho.c;j++){
-        error_ho.data[i][j] = lr * errors[j] * dsigmoid(out[j]) * hidden.data[0][i];
+        error_ho.data[i][j] = this.lr * errors[j] * dsigmoid(out[j]) * hidden.data[0][i];
         //print(error_ho.data[i][j] + " ");
       }
       //println();
     }
 
 
-    var error_ih = new Matrix(m1.r,m1.c);
+    var error_ih = new Matrix(this.m1.r,this.m1.c);
 
     for (var i=0;i<error_ih.r;i++){
       for (var j=0;j<error_ih.c;j++){
-        error_ih.data[i][j] *= lr;
+        error_ih.data[i][j] *= this.lr;
         error_ih.data[i][j] *= h_errors[j];
         error_ih.data[i][j] *= dsigmoid(hidden.data[0][j]);
         error_ih.data[i][j] *= input[i];
@@ -128,13 +128,13 @@ class NeuralNetwork{
 
     for (var i=0;i<err_bo.r;i++){
       for (var j=0;j<err_bo.c;j++){
-        err_bo.data[i][j] = lr * errors[j] * dsigmoid(out[j]);
+        err_bo.data[i][j] = this.lr * errors[j] * dsigmoid(out[j]);
       }
     }
 
     for (var i=0;i<err_bh.r;i++){
       for (var j=0;j<err_bh.c;j++){
-        err_bh.data[i][j] *= lr;
+        err_bh.data[i][j] *= this.lr;
         err_bh.data[i][j] *= h_errors[j];
         err_bh.data[i][j] *= dsigmoid(hidden.data[0][j]);
       }
@@ -142,28 +142,28 @@ class NeuralNetwork{
 
     for (var i=0;i<err_bh.r;i++){
       for (var j=0;j<err_bh.c;j++){
-        bh.data[i][j]+=err_bh.data[i][j];
+        this.bh.data[i][j]+=err_bh.data[i][j];
       }
     }
 
     for (var i=0;i<err_bo.r;i++){
       for (var j=0;j<err_bo.c;j++){
-        bo.data[i][j] +=err_bo.data[i][j];
+        this.bo.data[i][j] +=err_bo.data[i][j];
       }
     }
 
 
-    for (var i=0;i<m1.r;i++){
-      for (var j=0;j<m1.c;j++){
-        m1.data[i][j] += error_ih.data[i][j];
+    for (var i=0;i<this.m1.r;i++){
+      for (var j=0;j<this.m1.c;j++){
+        this.m1.data[i][j] += error_ih.data[i][j];
 
       }
     }
 
 
-    for (var i=0;i<m2.r;i++){
-      for (var j=0;j<m2.c;j++){
-        m2.data[i][j] += error_ho.data[i][j];
+    for (var i=0;i<this.m2.r;i++){
+      for (var j=0;j<this.m2.c;j++){
+        this.m2.data[i][j] += error_ho.data[i][j];
       }
     }
 
@@ -177,10 +177,10 @@ class Matrix{
   // var r;
   // var c;
   // var[][] data;
-  Matrix(r, c, data){
+  constructor(r, c){
     this.r = r;
     this.c = c;
-    this.data = data;
+    this.data = createArray(r,c);
 
   }
   transpose(){
@@ -215,7 +215,6 @@ function createArray(r,c){
     for (var j=0;j<c;j++){
       temp.push(random(0,1));
     }
-    console.log(temp);
     data.push(temp);
     temp = [];
   }
