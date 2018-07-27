@@ -6,7 +6,7 @@ function setup() {
   nn = new NeuralNetwork(2,2,1);
   for (var i=0;i<1000;i++){
     chooseRandomTrainingSet();
-    nn.evolve(inputs,taragets)
+    nn.evolve(inputs,targets)
   }
 }
 
