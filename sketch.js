@@ -4,7 +4,11 @@ var targets = [];
 
 function setup() {
   nn = new NeuralNetwork(2,2,1);
-  for (var i=0;i<1000;i++){
+  TrainNN(10000);
+}
+
+function TrainNN(n){
+  for (var i=0;i<n;i++){
     chooseRandomTrainingSet();
     nn.evolve(inputs,targets);
   }
@@ -30,6 +34,17 @@ else{
   }
 }
 
+function consoleOutputs(){
+  console.log("XOR(1,1) = " + nn.estimate([1,1]));
+  console.log("XOR(0,1) = " + nn.estimate([0,1]));
+  console.log("XOR(1,0) = " + nn.estimate([1,0]));
+  console.log("XOR(0,0) = " + nn.estimate([0,0]));
+}
+
 function draw() {
-  // put drawing code here
+  createP("The Neural Network sais that XOR(1,1) = " + nn.estimate([1,1]));
+  createP("The Neural Network sais that XOR(0,1) = " + nn.estimate([0,1]));
+  createP("The Neural Network sais that XOR(1,0) = " + nn.estimate([1,0]));
+  createP("The Neural Network sais that XOR(0,0) = " + nn.estimate([0,0]));
+  noLoop();
 }
